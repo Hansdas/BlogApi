@@ -18,18 +18,14 @@ namespace BlogApi.Controllers
         public IActionResult Upload()
         {
             var imgFile = Request.Form.Files[0];
-            int index = imgFile.FileName.LastIndexOf('.');
-            //获取后缀名
-            string extension = imgFile.FileName.Substring(index, imgFile.FileName.Length - index);
-            string guid = Guid.NewGuid().ToString().Replace("-", "");
-            string newFileName = guid + extension;
+            string fileName = imgFile.FileName;
             DateTime dateTime = DateTime.Now;
             //linux环境目录为/{1}/
             string path = string.Format(@"{0}/TempFile/{1}/{2}/{3}", "/home/www", dateTime.Year.ToString(), dateTime.Month.ToString()
                 , dateTime.Day.ToString());
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string savePath = path + @"/" + newFileName;
+            string savePath = path + @"/" + fileName;
             try
             {              
                 using (FileStream fs = System.IO.File.Create(savePath))

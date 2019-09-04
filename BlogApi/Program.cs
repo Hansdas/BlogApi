@@ -16,11 +16,6 @@ namespace BlogApi
         {
             CreateWebHostBuilder(args).Build().Run();
         }
-         //本地启动
-        //public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        //    WebHost.CreateDefaultBuilder(args).UseUrls("http://*:5000")
-        //        .UseStartup<Startup>();
-        //linux启动
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
