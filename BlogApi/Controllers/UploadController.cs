@@ -11,42 +11,39 @@ namespace BlogApi.Controllers
     [ApiController]
     public class UploadController : ControllerBase
     {
-        private IHostingEnvironment hostingEnvironment;
-        public UploadController(IHostingEnvironment _hostingEnvironment)
+        public UploadController()
         {
-            hostingEnvironment = _hostingEnvironment;
         }
         [HttpPost]
         public IActionResult Upload()
         {
+            var imgFile = Request.Form.Files[0];
+            int index = imgFile.FileName.LastIndexOf('.');
+            //获取后缀名
+            string extension = imgFile.FileName.Substring(index, imgFile.FileName.Length - index);
+            string guid = Guid.NewGuid().ToString().Replace("-", "");
+            string newFileName = guid + extension;
+            DateTime dateTime = DateTime.Now;
+            //linux环境目录为/{1}/
+            string path = string.Format(@"{0}/TempFile/{1}/{2}/{3}", "/home/www", dateTime.Year.ToString(), dateTime.Month.ToString()
+                , dateTime.Day.ToString());
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            string savePath = path + @"/" + newFileName;
             try
-            {
-                var imgFile = Request.Form.Files[0];
-                int index = imgFile.FileName.LastIndexOf('.');
-                //获取后缀名
-                string extension = imgFile.FileName.Substring(index, imgFile.FileName.Length - index);
-                string webpath = hostingEnvironment.ContentRootPath;
-                string guid = Guid.NewGuid().ToString().Replace("-", "");
-                string newFileName = guid + extension;
-                DateTime dateTime = DateTime.Now;
-                //linux环境目录为/{1}/
-                string path = string.Format(@"{0}/TemporaryFile/{1}/{2}/{3}", "/home/www", dateTime.Year.ToString(), dateTime.Month.ToString()
-                    , dateTime.Day.ToString());
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-                string imgSrc = path + @"/" + newFileName;
-                using (FileStream fs = System.IO.File.Create(imgSrc))
+            {              
+                using (FileStream fs = System.IO.File.Create(savePath))
                 {
                     imgFile.CopyTo(fs);
                     fs.Flush();
                 }
-                return new JsonResult(new { message = "OK", code = 200 });
+                return new JsonResult(new { savepath = savePath, code = 200 });
             }
             catch (Exception e)
             {
                 return new JsonResult(new {message=e.Message,code=500});
             }
-        }
+        }      
         [HttpDelete]
         public string DeleteFile()
         {
