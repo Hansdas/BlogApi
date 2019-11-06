@@ -20,12 +20,15 @@ namespace BlogApi.Controllers
             var imgFile = Request.Form.Files[0];
             string fileName = imgFile.FileName;
             DateTime dateTime = DateTime.Now;
-            //linux环境目录为/{1}/
-            string path = string.Format(@"{0}/TempFile/{1}/{2}/{3}", "/home/www", dateTime.Year.ToString(), dateTime.Month.ToString()
+            //路径日期部分
+            string datePath = string.Format("{0}/{1}/{2}/", dateTime.Year.ToString(), dateTime.Month.ToString()
                 , dateTime.Day.ToString());
+            //linux环境目录为/{1}/
+            string path = string.Format(@"{0}/TempFile/{1}", "/home/www", datePath);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string savePath = path + @"/" + fileName;
+            string savePath = path + fileName;
+            datePath = datePath + fileName;
             try
             {              
                 using (FileStream fs = System.IO.File.Create(savePath))
@@ -33,7 +36,7 @@ namespace BlogApi.Controllers
                     imgFile.CopyTo(fs);
                     fs.Flush();
                 }
-                return new JsonResult(new { savepath = savePath, code = 200 });
+                return new JsonResult(new { savepath = savePath,datepath= datePath, code = 200 });
             }
             catch (Exception e)
             {
