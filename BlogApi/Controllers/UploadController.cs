@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 namespace BlogApi.Controllers
@@ -11,8 +7,10 @@ namespace BlogApi.Controllers
     [ApiController]
     public class UploadController : ControllerBase
     {
-        public UploadController()
+        [HttpGet("{path}")]
+        public string TestGet(string path)
         {
+            return path;
         }
         [HttpPost]
         public IActionResult Upload()
@@ -42,11 +40,16 @@ namespace BlogApi.Controllers
             {
                 return new JsonResult(new {message=e.Message,code=500});
             }
-        }      
-        [HttpDelete]
-        public string DeleteFile()
+        }
+        [HttpDelete("{year}/{month}/{day}/{fileName}/{extension}")]
+        public JsonResult DeleteFile(string year,string month,string day,string fileName,string extension)
         {
-            return "1";
+            string datePath = string.Format("{0}/{1}/{2}/{3}.{4}", year, month, day,fileName,extension);
+            string path = string.Format(@"{0}/TempFile/{1}", "/home/www", datePath);           
+            if (!Directory.Exists(path))
+                return new JsonResult(new { message = "不存在目录："+path, code = 500 });
+            System.IO.File.Delete(path);
+            return new JsonResult(new { code = 200 });
         }
     }
 }
