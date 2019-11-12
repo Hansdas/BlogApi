@@ -46,7 +46,7 @@ namespace BlogApi.Controllers
         {
             string datePath = string.Format("{0}/{1}/{2}/{3}.{4}", year, month, day,fileName,extension);
             string path = string.Format(@"{0}/TempFile/{1}", "/home/www", datePath);           
-            if (!Directory.Exists(path))
+            if (!System.IO.File.Exists(path))
                 return new JsonResult(new { message = "不存在目录："+path, code = 500 });
             System.IO.File.Delete(path);
             return new JsonResult(new { code = 200 });
