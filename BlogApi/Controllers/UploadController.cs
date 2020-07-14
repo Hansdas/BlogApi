@@ -7,7 +7,8 @@ namespace BlogApi.Controllers
     [ApiController]
     public class UploadController : ControllerBase
     {
-        private string http = "http://127.0.0.1";
+        private string http = "http://58.87.92.221";
+        //private string http = "D:";
         [HttpGet("{path}")]
         public string TestGet(string path)
         {
@@ -20,15 +21,20 @@ namespace BlogApi.Controllers
         {
             var imgFile = Request.Form.Files[0];
             string fileName = imgFile.FileName;
-            return UploadFile(imgFile, fileName);
+            string url;
+            string newFileName;
+            UploadFile(imgFile, fileName, out url,out newFileName);
+            return new JsonResult(new { uploaded = 1, fileName = newFileName, url = url });
+
         }
 
-        private  IActionResult UploadFile(Microsoft.AspNetCore.Http.IFormFile imgFile, string fileName)
+        private  IActionResult UploadFile(Microsoft.AspNetCore.Http.IFormFile imgFile, string fileName,out string url,out string newName)
         {
             int index = fileName.LastIndexOf('.');
             string extension = fileName.Substring(index, fileName.Length - index);//获取后缀名
             string guid = Guid.NewGuid().ToString().Replace("-", "");//生成guid
             string newFileName = guid + extension;
+            newName = newFileName;
             DateTime dateTime = DateTime.Now;
             //路径日期部分
             string datePath = string.Format("{0}/{1}/{2}/", dateTime.Year.ToString(), dateTime.Month.ToString()
@@ -45,11 +51,13 @@ namespace BlogApi.Controllers
                     imgFile.CopyTo(fs);
                     fs.Flush();
                 }
-                string savePath =http+ path + newFileName;
+                string savePath =string.Format("{0}/bf/{1}",http,datePath);
+                url = savePath;
                 return new JsonResult(new { savepath = savePath, datepath = datePath, code = '0',length=imgFile.Length });
             }
             catch (Exception e)
             {
+                url = "";
                 return new JsonResult(new { message = e.Message, code = '1' });
             }
         }
@@ -71,7 +79,9 @@ namespace BlogApi.Controllers
                 if (string.IsNullOrEmpty(description))
                     return new JsonResult(new { code = "1", msg = "描述为空" });
                 var imgFile = Request.Form.Files[0];
-                return UploadFile(imgFile, imgFile.FileName);
+                string url;
+                string newFileName;
+                return UploadFile(imgFile, imgFile.FileName,out url,out newFileName);
             }
             catch (Exception ex)
             {

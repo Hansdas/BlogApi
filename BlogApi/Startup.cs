@@ -31,7 +31,7 @@ namespace BlogApi
                 s.AddPolicy("cores", build =>
                 {
                     build
-                    .WithOrigins("http://127.0.0.1:8080", "http://127.0.0.1:5001")
+                    .WithOrigins("http://127.0.0.1:8080", "http://127.0.0.1:5001", "http://58.87.92.221:5000", "http://www.ttblog.site")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
